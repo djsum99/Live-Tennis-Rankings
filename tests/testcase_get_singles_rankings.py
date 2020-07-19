@@ -32,5 +32,3 @@ class ThisTestCase(unittest.TestCase):
     def test_get_singles_rankings(self, *args, **kwargs):
         response = get_singles_rankings()
         assert response == self.singles_rankings
-
-

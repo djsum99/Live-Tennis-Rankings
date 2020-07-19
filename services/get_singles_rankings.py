@@ -9,7 +9,18 @@ appendOsEnvironmentVariables()
 
 from services.log import log
 
-def get_singles_rankings_request():
+def get_singles_rankings_request() -> str:
+    '''
+    This function gets the html contents from the ATP Single Rankings Url
+    and returns it
+
+    Parameters:
+        None
+    
+    Returns:
+        (str): html contents of the site
+    '''
+
     response = requests.get(os.environ['ATP_SINGLE_RANKINGS_URL'])
     assert response.status_code == 200, json.dumps({
         'Event': 'get_singles_rankings_request',
@@ -29,6 +40,15 @@ def get_singles_rankings_request():
     return response.text
 
 def get_singles_rankings():
+    '''
+    This function gets an html table from ATP singles ranking site extracts the
+    ranking table and returns it as a table
+
+    Parameters:
+        None
+
+    Returns: A matrix of singles ranking data
+    '''
     try:
         soup = BeautifulSoup(get_singles_rankings_request())
         table = soup.findAll('tbody')[0]

@@ -1,5 +1,4 @@
 import json
-import pickle
 
 def readFromFile(pathname: str) -> str:
     with open(pathname, 'r') as fp:
