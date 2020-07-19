@@ -1,0 +1,8 @@
+{
+    "environment": {
+        "ATP_SINGLE_RANKINGS_URL": "https://www.atptour.com/en/rankings/singles",
+        "LOG_FILE_PATHNAME": "logs/logs.log",
+        "BACKUP_LOG_FILE_COUNT": "1",
+        "LOG_FILE_BYTE_SIZE": "1048576"
+    }
+}
