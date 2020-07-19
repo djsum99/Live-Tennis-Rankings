@@ -1,14 +1,13 @@
 import os
 import json
 import requests
+from bs4 import BeautifulSoup
 from services.environment import appendOsEnvironmentVariables
 
 # Appends environment variables to os.environ variables
 appendOsEnvironmentVariables()
 
 from services.log import log
-
-
 
 def get_singles_rankings_request():
     response = requests.get(os.environ['ATP_SINGLE_RANKINGS_URL'])
@@ -28,3 +27,26 @@ def get_singles_rankings_request():
     })
 
     return response.text
+
+def get_singles_rankings():
+    try:
+        soup = BeautifulSoup(get_singles_rankings_request())
+        table = soup.findAll('tbody')[0]
+        response = []
+        for row in table.findAll('tr'):
+            response.append([
+                td.get_text(strip=True) 
+                for td in row.find_all('td')
+                if td.get_text(strip=True) != ''
+            ])
+
+        return response
+    except Exception as e:
+        log.exception(e)
+        log.error({
+            'Event': 'get_singles_rankings',
+            'Details': {
+                'Message': 'Something went wrong'
+            }
+        })
+        raise e
