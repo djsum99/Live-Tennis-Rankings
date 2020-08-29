@@ -1,10 +1,22 @@
 from BracketElement import BracketElement
 from levels import levels
-
+from rankings import *
 '''
 A Tournament has the following attributes: a name, a level, and a bracket
 made up of BracketElements
 '''
+
+def add_players(tournament):
+    global rankings
+    global players
+    for player in tournament.bracket.keys():
+        if player not in players.keys():
+            rankings.append({"name": player, "points": 0})
+            players[player] = {"ranking": 0, "points": 0, "tournaments": {}}
+    sort_rankings()
+    save_players()
+    save_rankings()
+
 class Tournament:
     def __init__(self, name, level, players):
         self.name = name
@@ -20,6 +32,8 @@ class Tournament:
             self.bracket[players[i+1]] = BracketElement(i+1, self.pointsDistribution[0])
             self.bracket[players[i]].opponent = players[i+1]
             self.bracket[players[i+1]].opponent = players[i]
+
+        add_players(self)
 
     #for comparing Tournaments in test cases
     def __eq__(self, other):
@@ -40,6 +54,7 @@ class Tournament:
         try:
             self.bracket[winnerName].win()
             self.bracket[winnerName].newPoints = self.pointsDistribution[self.bracket[winnerName].round]
+            update_player(winnerName, self.name, self.pointsDistribution[self.bracket[winnerName].round])
             opponent = self.bracket[winnerName].opponent
             if not self.is_bracket_completed(winnerName):
                 for key in self.bracket.keys():
@@ -54,3 +69,7 @@ class Tournament:
             self.bracket[opponent].opponent = ''
         except KeyError:
             print('winnerName not in bracket')
+
+
+t = Tournament('auckland', 'i', ['SW', 'CG', 'CM', 'AL'])
+t.completed_match('SW')
