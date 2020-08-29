@@ -1,23 +1,23 @@
-from functions.BracketElement import BracketElement
-from math import log2
+from BracketElement import BracketElement
+from levels import levels
 
 '''
-A Tournament has the following attributes: a name, a level, a boolean
-that states whether is has been completed, and a bracket made up of
-BracketElements
+A Tournament has the following attributes: a name, a level, and a bracket
+made up of BracketElements
 '''
 class Tournament:
     def __init__(self, name, level, players):
         self.name = name
         self.level = level
         self.completed = False
+        self.pointsDistribution = levels.get(level, 'Invalid Level')
 
         #bracket is a dictionary, with the key being the name of the player
         #and the value being the BracketElement associated with the player
         self.bracket = {}
         for i in range(0,len(players),2):
-            self.bracket[players[i]] = BracketElement(i)
-            self.bracket[players[i+1]] = BracketElement(i+1)
+            self.bracket[players[i]] = BracketElement(i, self.pointsDistribution[0])
+            self.bracket[players[i+1]] = BracketElement(i+1, self.pointsDistribution[0])
             self.bracket[players[i]].opponent = players[i+1]
             self.bracket[players[i+1]].opponent = players[i]
 
@@ -28,8 +28,7 @@ class Tournament:
     #determines whether the match that was just completed was the last
     #match of the tournament, thereby completing the bracket
     def is_bracket_completed(self, winnerName):
-        targetLength = 6-log2(len(self.bracket))
-        if len(self.bracket[winnerName].bitsArr)==targetLength:
+        if self.bracket[winnerName].round==len(self.pointsDistribution)-1:
             self.completed = True
             self.bracket[winnerName].opponent = 'Won Tournament'
             return True
@@ -40,6 +39,7 @@ class Tournament:
     def completed_match(self, winnerName):
         try:
             self.bracket[winnerName].win()
+            self.bracket[winnerName].newPoints = self.pointsDistribution[self.bracket[winnerName].round]
             opponent = self.bracket[winnerName].opponent
             if not self.is_bracket_completed(winnerName):
                 for key in self.bracket.keys():
@@ -52,5 +52,5 @@ class Tournament:
 
             self.bracket[opponent].lostTo = winnerName
             self.bracket[opponent].opponent = ''
-        except:
+        except KeyError:
             print('winnerName not in bracket')
